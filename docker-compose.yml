@@ -1,0 +1,40 @@
+version: '2'  
+services:  
+  nginx:
+    image: nginx:latest
+    container_name: nz01
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/src
+      - ./config/nginx:/etc/nginx/conf.d
+    depends_on:
+      - web
+  web:
+    build: .
+    container_name: dz01
+    depends_on:
+      - db
+    volumes:
+      - ./src:/src
+    expose:
+      - "8000"
+    links:
+      - db
+      - redis
+  db:
+    image: mysql
+    expose: 
+      - "3306"
+    volumes:
+     - ./db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=data01
+      - MYSQL_DATABASE=data01
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=data01
+  redis:
+    image: redis:latest 
+    container_name: rz01
+    ports:
+    - '6379:6379'
